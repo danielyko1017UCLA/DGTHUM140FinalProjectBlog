@@ -4,7 +4,7 @@
     "href": "index.html",
     "title": "myblog",
     "section": "",
-    "text": "First File\n\n\n\n\n\nTesting Quarto\n\n\n\n\n\n\nAug 3, 2023\n\n\nDaniel Ko\n\n\n\n\n\n\n  \n\n\n\n\nPost With Code\n\n\n\n\n\n\n\nnews\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\n\n\nAug 3, 2023\n\n\nHarlow Malloc\n\n\n\n\n\n\n  \n\n\n\n\nWelcome To My Blog\n\n\n\n\n\n\n\nnews\n\n\n\n\n\n\n\n\n\n\n\nJul 31, 2023\n\n\nTristan O’Malley\n\n\n\n\n\n\nNo matching items"
+    "text": "Analysis of Labor between Ethnicity and Gender\n\n\n\n\n\n\n\n\n\n\n \n\n\n\n\n  \n\n\n\n\nPost With Code\n\n\n\n\n\n\n\nnews\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\n\n\nAug 3, 2023\n\n\nHarlow Malloc\n\n\n\n\n\n\n  \n\n\n\n\nWelcome To My Blog\n\n\n\n\n\n\n\nnews\n\n\n\n\n\n\n\n\n\n\n\nJul 31, 2023\n\n\nTristan O’Malley\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "posts/post-with-code/index.html",
@@ -14,25 +14,39 @@
     "text": "This is a post with executable code."
   },
   {
-    "objectID": "posts/Topics.html",
-    "href": "posts/Topics.html",
-    "title": "First File",
+    "objectID": "posts/Website_Notebook.html",
+    "href": "posts/Website_Notebook.html",
+    "title": "Analysis of Labor between Ethnicity and Gender",
     "section": "",
-    "text": "We are going to look at data from the 20 Newsgroups dataset. These are postings to newsgroups in 20 different categories.\nScikit-learn has a function for downloading the data. See: https://scikit-learn.org/stable/modules/generated/sklearn.datasets.fetch_20newsgroups.html\n\n\nLatent Dirichlet Allocation: a topic model that generates topics based on a set of documents’ word frequencies.\n\nGet a “dictionary” that has IDs for all the words along with a record of their word frequencies.\nUse our “bag of words” to generate a list for each document containing its words and their frequencies\nUse gensim to generate an LDA model\n\n\n\n\n\n“Gensim is an open-source library for unsupervised topic modeling and natural language processing, using modern statistical machine learning.”\ngensim website\n\n\nfrom sklearn.datasets import fetch_20newsgroups\n\n\ndata = fetch_20newsgroups(remove=(\"headers\", \"footers\", \"quotes\"))\n\n\nprint(data.DESCR)\n\n\nx = data.data\n\n\nlen(x)\n\n\nx[0]\n\n\ndata.target_names\n\n\ndata.target\n\nWe use NLTK to pre-process the words.\n\nfrom nltk.tokenize import sent_tokenize, word_tokenize\nfrom nltk.corpus import stopwords\nfrom string import punctuation\n\n\nmyStopWords = list(punctuation) + stopwords.words('english')\n\n\nx[0]\n\n\n[w for w in word_tokenize(x[0].lower()) if w not in myStopWords]\n\n\ndocs = []\nfor i in x:\n    docs.append([w for w in word_tokenize(i.lower()) if w not in myStopWords])\n\n\ndocs[0]\n\n\nfrom nltk.stem.porter import PorterStemmer\n#from nltk.stem import LancasterStemmer\n\n\n# Create p_stemmer of class PorterStemmer\np_stemmer = PorterStemmer()\n\n\ndocs_stemmed = []\nfor i in docs:\n    docs_stemmed.append([p_stemmer.stem(w) for w in i])\n\n\ndocs_stemmed[0]\n\nHere we use gensim to make the dictionary and corpus structures, and to employ the LDA model to extract groups (aka topics) and the distribution of words for each topic.\n\nfrom gensim import corpora, models\nimport gensim\n\n\ndictionary = corpora.Dictionary(docs_stemmed)\n\n\nlen(dictionary)\n\n\ndictionary.filter_extremes(no_below=10, no_above=0.5)\n# could also trim with keep_n=1000 or similar to keep only the top words\n\n\nlen(dictionary)\n\n\nprint(dictionary.token2id)\n\n\nprint(dictionary.token2id['patient'])\n\n\ndictionary[1668]\n\n\ncorpus = [dictionary.doc2bow(text) for text in docs_stemmed]\n\n\nprint(corpus[30])\n\n\ndictionary[276]\n\n\ndocs_stemmed[30]\n\n\nwordid = corpus[30][0]\nprint(dictionary[wordid[0]],wordid[1])\n\n\nfor i in corpus[30]:\n    print(dictionary[i[0]], i[1])\n\n\nldamodel = gensim.models.ldamodel.LdaModel(corpus, \n                                           num_topics=20, \n                                           id2word = dictionary, \n                                           passes=5)\n\n\nldamodel.show_topics(num_topics=20)\n\n\nfor i in ldamodel.print_topics(num_topics=20, num_words=20):\n    print(i[0])\n    print(i[1])\n    print('\\n')\n\n\ndata.target_names\n\n\nimport matplotlib.pyplot as plt\nimport re\n\n\nre.split(re.escape(' + ') + '|' + re.escape('*'), 'hi + me*4')\n\n\nfig,ax = plt.subplots(5,4,figsize=(15,20))\nax = ax.flatten()\nfor i in ldamodel.print_topics(num_topics=20, num_words=20):\n    x = []\n    y = []\n    count = 0\n    for j in re.split(re.escape(' + ') + '|' + re.escape('*'), i[1]):\n        if count % 2 == 0:\n            y.insert(0,float(j))\n        else:\n            x.insert(0,j)\n        count += 1\n    ax[i[0]].barh(x,y,height=0.5)\nplt.tight_layout()"
+    "text": "This analysis aims to look for patterns and/or correlations between labor status in the US (eg. employed, unemployed, civilian labor force) and other factors such as ethnicity (eg. White, Asian, African-American) and gender (eg. male or female). These will be compared against each other to provide different insights into what may be related with each other. In order to expand on this analysis, other datasets with other factors such as cost of living and average income may be included as this notebook is being developed. Also, datasets with more up-to-date labor data may be included as well. The primary libraries that will be used are pandas and matplotlib, although other libraries may be used depending on what the other datasets may require for cleaning or web scraping."
   },
   {
-    "objectID": "posts/Topics.html#lda",
-    "href": "posts/Topics.html#lda",
-    "title": "First File",
+    "objectID": "posts/Website_Notebook.html#description",
+    "href": "posts/Website_Notebook.html#description",
+    "title": "Analysis of Labor between Ethnicity and Gender",
     "section": "",
-    "text": "Latent Dirichlet Allocation: a topic model that generates topics based on a set of documents’ word frequencies.\n\nGet a “dictionary” that has IDs for all the words along with a record of their word frequencies.\nUse our “bag of words” to generate a list for each document containing its words and their frequencies\nUse gensim to generate an LDA model"
+    "text": "This analysis aims to look for patterns and/or correlations between labor status in the US (eg. employed, unemployed, civilian labor force) and other factors such as ethnicity (eg. White, Asian, African-American) and gender (eg. male or female). These will be compared against each other to provide different insights into what may be related with each other. In order to expand on this analysis, other datasets with other factors such as cost of living and average income may be included as this notebook is being developed. Also, datasets with more up-to-date labor data may be included as well. The primary libraries that will be used are pandas and matplotlib, although other libraries may be used depending on what the other datasets may require for cleaning or web scraping."
   },
   {
-    "objectID": "posts/Topics.html#gensim",
-    "href": "posts/Topics.html#gensim",
-    "title": "First File",
-    "section": "",
-    "text": "“Gensim is an open-source library for unsupervised topic modeling and natural language processing, using modern statistical machine learning.”\ngensim website\n\n\nfrom sklearn.datasets import fetch_20newsgroups\n\n\ndata = fetch_20newsgroups(remove=(\"headers\", \"footers\", \"quotes\"))\n\n\nprint(data.DESCR)\n\n\nx = data.data\n\n\nlen(x)\n\n\nx[0]\n\n\ndata.target_names\n\n\ndata.target\n\nWe use NLTK to pre-process the words.\n\nfrom nltk.tokenize import sent_tokenize, word_tokenize\nfrom nltk.corpus import stopwords\nfrom string import punctuation\n\n\nmyStopWords = list(punctuation) + stopwords.words('english')\n\n\nx[0]\n\n\n[w for w in word_tokenize(x[0].lower()) if w not in myStopWords]\n\n\ndocs = []\nfor i in x:\n    docs.append([w for w in word_tokenize(i.lower()) if w not in myStopWords])\n\n\ndocs[0]\n\n\nfrom nltk.stem.porter import PorterStemmer\n#from nltk.stem import LancasterStemmer\n\n\n# Create p_stemmer of class PorterStemmer\np_stemmer = PorterStemmer()\n\n\ndocs_stemmed = []\nfor i in docs:\n    docs_stemmed.append([p_stemmer.stem(w) for w in i])\n\n\ndocs_stemmed[0]\n\nHere we use gensim to make the dictionary and corpus structures, and to employ the LDA model to extract groups (aka topics) and the distribution of words for each topic.\n\nfrom gensim import corpora, models\nimport gensim\n\n\ndictionary = corpora.Dictionary(docs_stemmed)\n\n\nlen(dictionary)\n\n\ndictionary.filter_extremes(no_below=10, no_above=0.5)\n# could also trim with keep_n=1000 or similar to keep only the top words\n\n\nlen(dictionary)\n\n\nprint(dictionary.token2id)\n\n\nprint(dictionary.token2id['patient'])\n\n\ndictionary[1668]\n\n\ncorpus = [dictionary.doc2bow(text) for text in docs_stemmed]\n\n\nprint(corpus[30])\n\n\ndictionary[276]\n\n\ndocs_stemmed[30]\n\n\nwordid = corpus[30][0]\nprint(dictionary[wordid[0]],wordid[1])\n\n\nfor i in corpus[30]:\n    print(dictionary[i[0]], i[1])\n\n\nldamodel = gensim.models.ldamodel.LdaModel(corpus, \n                                           num_topics=20, \n                                           id2word = dictionary, \n                                           passes=5)\n\n\nldamodel.show_topics(num_topics=20)\n\n\nfor i in ldamodel.print_topics(num_topics=20, num_words=20):\n    print(i[0])\n    print(i[1])\n    print('\\n')\n\n\ndata.target_names\n\n\nimport matplotlib.pyplot as plt\nimport re\n\n\nre.split(re.escape(' + ') + '|' + re.escape('*'), 'hi + me*4')\n\n\nfig,ax = plt.subplots(5,4,figsize=(15,20))\nax = ax.flatten()\nfor i in ldamodel.print_topics(num_topics=20, num_words=20):\n    x = []\n    y = []\n    count = 0\n    for j in re.split(re.escape(' + ') + '|' + re.escape('*'), i[1]):\n        if count % 2 == 0:\n            y.insert(0,float(j))\n        else:\n            x.insert(0,j)\n        count += 1\n    ax[i[0]].barh(x,y,height=0.5)\nplt.tight_layout()"
+    "objectID": "posts/Website_Notebook.html#data-sources",
+    "href": "posts/Website_Notebook.html#data-sources",
+    "title": "Analysis of Labor between Ethnicity and Gender",
+    "section": "Data Source(s)",
+    "text": "Data Source(s)\nLabor Data from CORGIS (Up to 2015): https://corgis-edu.github.io/corgis/csv/labor/\n(TO BE EXPANDED LATER)"
+  },
+  {
+    "objectID": "posts/Website_Notebook.html#motivation",
+    "href": "posts/Website_Notebook.html#motivation",
+    "title": "Analysis of Labor between Ethnicity and Gender",
+    "section": "Motivation",
+    "text": "Motivation\nThe primary motivation for analyzing this data is to see if there are any noticeable differences between groups of people when it comes to labor in the US. Employment (or rather, unemployment) is a very important part of people’s lives, and discovering if there are clear biases in “intrinsic factors” will make it easier to figure out why these biases exist. In other words, using objective analysis can make it easier for proper political discussion to lead the right direction and for the general public to understand what employment trends are."
+  },
+  {
+    "objectID": "posts/Website_Notebook.html#questions-to-answer",
+    "href": "posts/Website_Notebook.html#questions-to-answer",
+    "title": "Analysis of Labor between Ethnicity and Gender",
+    "section": "Questions to Answer",
+    "text": "Questions to Answer\n\nAre there major differences in employment between ethnicities in the US?\nAre men or women more likely to be employed in the US?\nIs there a specific combination of ethnicity and gender that is more likely to be employed or less likely to be employed?\nWhat is the most common type of employment for a given ethnicity or gender? (TO BE EXPANDED LATER)"
   },
   {
     "objectID": "posts/welcome/index.html",
