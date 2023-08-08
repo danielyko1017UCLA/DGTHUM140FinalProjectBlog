@@ -93,9 +93,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Search"
   }
 }</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
-<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
 <link rel="stylesheet" href="../styles.css">
@@ -166,14 +163,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
+<section id="by-daniel-ko" class="level2">
+<h2 class="anchored" data-anchor-id="by-daniel-ko">By: Daniel Ko</h2>
+<section id="digital-humanities-140-final-project" class="level3">
+<h3 class="anchored" data-anchor-id="digital-humanities-140-final-project">Digital Humanities 140 Final Project</h3>
+</section>
+<section id="professor-benjamin-winjum" class="level3">
+<h3 class="anchored" data-anchor-id="professor-benjamin-winjum">Professor: Benjamin Winjum</h3>
+</section>
+</section>
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
 <section id="description" class="level2">
 <h2 class="anchored" data-anchor-id="description">Description</h2>
-<p>This analysis aims to look for patterns and/or correlations between labor status in the US (eg. employed, unemployed, civilian labor force) and other factors such as ethnicity (eg. White, Asian, African-American) and gender (eg. male or female). These will be compared against each other to provide different insights into what may be related with each other. In order to expand on this analysis, other datasets with other factors such as cost of living and average income may be included as this notebook is being developed. Also, datasets with more up-to-date labor data may be included as well. The primary libraries that will be used are pandas and matplotlib, although other libraries may be used depending on what the other datasets may require for cleaning or web scraping.</p>
+<p>This analysis aims to look for patterns and/or correlations between labor status in the US (eg. employed, unemployed) and other factors such as ethnicity (eg. White, Black/African-American) and gender (male or female). These will be compared against each other to provide different insights into what may be related with each other. More specifically, the differences between different factors and categories will be explored. The primary libraries that will be used are pandas and matplotlib, although other libraries such as requests and BeautifulSoup were used to help with scraping the data.</p>
 </section>
-<section id="data-sources" class="level2">
-<h2 class="anchored" data-anchor-id="data-sources">Data Source(s)</h2>
+<section id="data-source" class="level2">
+<h2 class="anchored" data-anchor-id="data-source">Data Source</h2>
 <p>Labor Data from CORGIS (Up to 2015): https://corgis-edu.github.io/corgis/csv/labor/</p>
-<p>(TO BE EXPANDED LATER)</p>
 </section>
 <section id="motivation" class="level2">
 <h2 class="anchored" data-anchor-id="motivation">Motivation</h2>
@@ -185,19 +192,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Are there major differences in employment between ethnicities in the US?</li>
 <li>Are men or women more likely to be employed in the US?</li>
 <li>Is there a specific combination of ethnicity and gender that is more likely to be employed or less likely to be employed?</li>
-<li>What is the most common type of employment for a given ethnicity or gender? (TO BE EXPANDED LATER)</li>
+<li>Which ethnicity has the highest number of people that are employed and unemployed?</li>
 </ul>
 </section>
-<section id="imports-and-data-collection" class="level1">
-<h1>Imports and Data Collection</h1>
-<div class="cell" data-execution_count="34">
+</section>
+<section id="methods" class="level1">
+<h1>Methods</h1>
+<section id="imports-and-data-collection" class="level2">
+<h2 class="anchored" data-anchor-id="imports-and-data-collection">Imports and Data Collection</h2>
+<div class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> requests</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> bs4 <span class="im">import</span> BeautifulSoup</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> py</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-tags="[]" data-execution_count="14">
+<div class="cell" data-tags="[]" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> pdcorgis(a):</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  inputText <span class="op">=</span> a.lower()</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  url <span class="op">=</span> <span class="st">'https://corgis-edu.github.io/corgis/csv/'</span> <span class="op">+</span> inputText <span class="op">+</span> <span class="st">'/'</span></span>
@@ -216,235 +226,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> dataframe</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-tags="[]" data-execution_count="18">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df1 <span class="op">=</span> pdcorgis(<span class="st">'labor'</span>)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>df1.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="18">
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">Time.Month</th>
-<th data-quarto-table-cell-role="th">Time.Month Name</th>
-<th data-quarto-table-cell-role="th">Time.Year</th>
-<th data-quarto-table-cell-role="th">Data.Civilian Noninstitutional Population.Asian</th>
-<th data-quarto-table-cell-role="th">Data.Civilian Noninstitutional Population.Black or African American</th>
-<th data-quarto-table-cell-role="th">Data.Civilian Noninstitutional Population.White</th>
-<th data-quarto-table-cell-role="th">Data.Not In Labor Force.Asian</th>
-<th data-quarto-table-cell-role="th">Data.Not In Labor Force.Black or African American</th>
-<th data-quarto-table-cell-role="th">Data.Not In Labor Force.White</th>
-<th data-quarto-table-cell-role="th">Data.Civilian Labor Force.Asian.Counts</th>
-<th data-quarto-table-cell-role="th">...</th>
-<th data-quarto-table-cell-role="th">Data.Unemployed.Black or African American.Counts.Women</th>
-<th data-quarto-table-cell-role="th">Data.Unemployed.Black or African American.Unemployment Rate.All</th>
-<th data-quarto-table-cell-role="th">Data.Unemployed.Black or African American.Unemployment Rate.Men</th>
-<th data-quarto-table-cell-role="th">Data.Unemployed.Black or African American.Unemployment Rate.Women</th>
-<th data-quarto-table-cell-role="th">Data.Unemployed.White.Counts.All</th>
-<th data-quarto-table-cell-role="th">Data.Unemployed.White.Counts.Men</th>
-<th data-quarto-table-cell-role="th">Data.Unemployed.White.Counts.Women</th>
-<th data-quarto-table-cell-role="th">Data.Unemployed.White.Unemployment Rate.All</th>
-<th data-quarto-table-cell-role="th">Data.Unemployed.White.Unemployment Rate.Men</th>
-<th data-quarto-table-cell-role="th">Data.Unemployed.White.Unemployment Rate.Women</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>1</td>
-<td>January</td>
-<td>1972</td>
-<td>0.0</td>
-<td>14332.0</td>
-<td>126749.0</td>
-<td>0.0</td>
-<td>5998.0</td>
-<td>0.0</td>
-<td>0.0</td>
-<td>...</td>
-<td>343.0</td>
-<td>11.6</td>
-<td>9.0</td>
-<td>9.8</td>
-<td>4439.0</td>
-<td>2096.0</td>
-<td>1325.0</td>
-<td>5.9</td>
-<td>4.8</td>
-<td>5.1</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>2</td>
-<td>February</td>
-<td>1972</td>
-<td>0.0</td>
-<td>14381.0</td>
-<td>126976.0</td>
-<td>0.0</td>
-<td>5943.0</td>
-<td>0.0</td>
-<td>0.0</td>
-<td>...</td>
-<td>311.0</td>
-<td>11.5</td>
-<td>8.8</td>
-<td>8.9</td>
-<td>4400.0</td>
-<td>2062.0</td>
-<td>1271.0</td>
-<td>5.8</td>
-<td>4.7</td>
-<td>4.9</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>3</td>
-<td>March</td>
-<td>1972</td>
-<td>0.0</td>
-<td>14401.0</td>
-<td>127191.0</td>
-<td>0.0</td>
-<td>5857.0</td>
-<td>0.0</td>
-<td>0.0</td>
-<td>...</td>
-<td>329.0</td>
-<td>10.7</td>
-<td>8.1</td>
-<td>9.3</td>
-<td>4256.0</td>
-<td>1963.0</td>
-<td>1265.0</td>
-<td>5.6</td>
-<td>4.5</td>
-<td>4.9</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
-<td>4</td>
-<td>April</td>
-<td>1972</td>
-<td>0.0</td>
-<td>14434.0</td>
-<td>127372.0</td>
-<td>0.0</td>
-<td>5952.0</td>
-<td>0.0</td>
-<td>0.0</td>
-<td>...</td>
-<td>260.0</td>
-<td>9.2</td>
-<td>6.9</td>
-<td>7.4</td>
-<td>3878.0</td>
-<td>1736.0</td>
-<td>1227.0</td>
-<td>5.1</td>
-<td>4.0</td>
-<td>4.8</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
-<td>5</td>
-<td>May</td>
-<td>1972</td>
-<td>0.0</td>
-<td>14486.0</td>
-<td>127601.0</td>
-<td>0.0</td>
-<td>5914.0</td>
-<td>0.0</td>
-<td>0.0</td>
-<td>...</td>
-<td>297.0</td>
-<td>9.3</td>
-<td>6.9</td>
-<td>8.4</td>
-<td>3523.0</td>
-<td>1525.0</td>
-<td>1242.0</td>
-<td>4.6</td>
-<td>3.5</td>
-<td>4.8</td>
-</tr>
-</tbody>
-</table>
-
-<p>5 rows × 51 columns</p>
-</div>
-</div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Boxes below are reserved for future data collection</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-tags="[]" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df1 <span class="op">=</span> pdcorgis(<span class="st">'labor'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="exploratory-data-visualizations" class="level1">
-<h1>Exploratory Data Visualizations</h1>
-<div class="cell" data-execution_count="140">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>year <span class="op">=</span> df1[<span class="st">'Time.Year'</span>]</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>white_unem <span class="op">=</span> df1[<span class="st">'Data.Unemployed.White.Counts.All'</span>]</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>black_unem <span class="op">=</span> df1[<span class="st">'Data.Unemployed.Black or African American.Counts.All'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell" data-execution_count="131">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots()</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>ax.plot(year, whiteunem)</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>ax.plot(year, blackunem)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<p><img src="Website_Notebook_files/figure-html/cell-10-output-1.png" class="img-fluid"></p>
-</div>
-</div>
-<div class="cell" data-execution_count="138">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>yearsgrouped <span class="op">=</span> df1[<span class="st">'Time.Year'</span>].unique()</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>male_unem_june <span class="op">=</span> df1.loc[df1[<span class="st">'Time.Month Name'</span>]<span class="op">==</span><span class="st">'June'</span>, <span class="st">'Data.Unemployed.White.Unemployment Rate.Men'</span>]</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>female_unem_june <span class="op">=</span> df1.loc[df1[<span class="st">'Time.Month Name'</span>]<span class="op">==</span><span class="st">'June'</span>, <span class="st">'Data.Unemployed.White.Unemployment Rate.Women'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell" data-tags="[]" data-execution_count="139">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots()</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>ax.plot(yearsgrouped, male_unem_june)</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>ax.plot(yearsgrouped, female_unem_june)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<p><img src="Website_Notebook_files/figure-html/cell-12-output-1.png" class="img-fluid"></p>
-</div>
-</div>
-<div class="cell" data-execution_count="136">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>monthsgrouped <span class="op">=</span> df1[<span class="st">'Time.Month Name'</span>].unique()</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>asia_employ_2000 <span class="op">=</span> df1.loc[df1[<span class="st">'Time.Year'</span>]<span class="op">==</span><span class="dv">2000</span>, <span class="st">'Data.Employed.Asian.Counts'</span>]</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>asia_unemploy_2000 <span class="op">=</span> df1.loc[df1[<span class="st">'Time.Year'</span>]<span class="op">==</span><span class="dv">2000</span>, <span class="st">'Data.Unemployed.Asian.Counts'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell" data-tags="[]" data-execution_count="137">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots()</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>ax.bar(monthsgrouped, asia_employ_2000)</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>ax.bar(monthsgrouped, asia_unemploy_2000)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="137">
-<pre><code>&lt;BarContainer object of 12 artists&gt;</code></pre>
-</div>
-<div class="cell-output cell-output-display">
-<p><img src="Website_Notebook_files/figure-html/cell-14-output-2.png" class="img-fluid"></p>
-</div>
-</div>
-<div class="cell" data-execution_count="134">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>asia_notlabor <span class="op">=</span> df1.groupby(<span class="st">'Time.Year'</span>)[<span class="st">'Data.Not In Labor Force.Asian'</span>].<span class="bu">sum</span>()</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>black_notlabor <span class="op">=</span> df1.groupby(<span class="st">'Time.Year'</span>)[<span class="st">'Data.Not In Labor Force.Black or African American'</span>].<span class="bu">sum</span>()</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>white_notlabor <span class="op">=</span> df1.groupby(<span class="st">'Time.Year'</span>)[<span class="st">'Data.Not In Labor Force.White'</span>].<span class="bu">sum</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell" data-execution_count="135">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots()</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>ax.barh(yearsgrouped, white_notlabor, label<span class="op">=</span><span class="st">'white'</span>)</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>ax.barh(yearsgrouped, black_notlabor, label<span class="op">=</span><span class="st">'black'</span>)</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>ax.barh(yearsgrouped, asia_notlabor, label<span class="op">=</span><span class="st">'asian'</span>)</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>ax.invert_yaxis()</span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>ax.legend()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="135">
-<pre><code>&lt;matplotlib.legend.Legend at 0x7fb67e7c9e40&gt;</code></pre>
-</div>
-<div class="cell-output cell-output-display">
-<p><img src="Website_Notebook_files/figure-html/cell-16-output-2.png" class="img-fluid"></p>
-</div>
-</div>
+<section id="understanding-the-data" class="level2">
+<h2 class="anchored" data-anchor-id="understanding-the-data">Understanding the Data</h2>
 <ul>
 <li><p>Data stretches from 1972 to 2015 completely from month to month</p></li>
 <li><p>The data is mostly complete for White and African American, but is noticeably missing everything before 2000 for Asians</p></li>
@@ -457,54 +244,217 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><p>Time.Month is mostly irrelevant, since Time.Month Name exists and is essentially the same thing</p></li>
 </ul>
 </section>
-<section id="analytical-data-visualizations" class="level1">
-<h1>Analytical Data Visualizations</h1>
-<div class="cell" data-execution_count="129">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Potential data organization code for first visualization</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>white_empl_ratio_male <span class="op">=</span> df1.groupby(<span class="st">'Time.Year'</span>)[<span class="st">'Data.Employed.White.Employment-Population Ratio.Men'</span>].<span class="bu">sum</span>()</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>black_empl_ratio_male <span class="op">=</span> df1.groupby(<span class="st">'Time.Year'</span>)[<span class="st">'Data.Employed.Black or African American.Employment-Population Ratio.Men'</span>].<span class="bu">sum</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="results-analytical-data-visualizations" class="level1">
+<h1>Results: Analytical Data Visualizations</h1>
+<div class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Data organization code for first visualization</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>white_empl_ratio_male <span class="op">=</span> df1.groupby(<span class="st">'Time.Year'</span>)[<span class="st">'Data.Employed.White.Employment-Population Ratio.Men'</span>].<span class="bu">sum</span>() <span class="op">/</span> <span class="dv">12</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>black_empl_ratio_male <span class="op">=</span> df1.groupby(<span class="st">'Time.Year'</span>)[<span class="st">'Data.Employed.Black or African American.Employment-Population Ratio.Men'</span>].<span class="bu">sum</span>() <span class="op">/</span> <span class="dv">12</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-execution_count="128">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Potential data organization code for second visualization</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>white_empl_ratio_female <span class="op">=</span> df1.groupby(<span class="st">'Time.Year'</span>)[<span class="st">'Data.Employed.White.Employment-Population Ratio.Women'</span>].<span class="bu">sum</span>()</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>black_empl_ratio_female <span class="op">=</span> df1.groupby(<span class="st">'Time.Year'</span>)[<span class="st">'Data.Employed.Black or African American.Employment-Population Ratio.Women'</span>].<span class="bu">sum</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Data organization code for second visualization</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>white_empl_ratio_female <span class="op">=</span> df1.groupby(<span class="st">'Time.Year'</span>)[<span class="st">'Data.Employed.White.Employment-Population Ratio.Women'</span>].<span class="bu">sum</span>() <span class="op">/</span> <span class="dv">12</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>black_empl_ratio_female <span class="op">=</span> df1.groupby(<span class="st">'Time.Year'</span>)[<span class="st">'Data.Employed.Black or African American.Employment-Population Ratio.Women'</span>].<span class="bu">sum</span>() <span class="op">/</span> <span class="dv">12</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-execution_count="141">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Potential data organization code for third visualization</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>white_unem_grouped <span class="op">=</span> df1.groupby(<span class="st">'Time.Year'</span>)[<span class="st">'Data.Unemployed.White.Counts.All'</span>].<span class="bu">sum</span>()</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>white_emp <span class="op">=</span> df1.groupby(<span class="st">'Time.Year'</span>)[<span class="st">'Data.Employed.White.Counts.All'</span>].<span class="bu">sum</span>()</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>white_civil <span class="op">=</span> df1.groupby(<span class="st">'Time.Year'</span>)[<span class="st">'Data.Civilian Labor Force.White.Counts.All'</span>].<span class="bu">sum</span>()</span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="co">#white_notlabor is already done</span></span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>black_unem_grouped <span class="op">=</span> df1.groupby(<span class="st">'Time.Year'</span>)[<span class="st">'Data.Unemployed.Black or African American.Counts.All'</span>].<span class="bu">sum</span>()</span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>black_emp <span class="op">=</span> df1.groupby(<span class="st">'Time.Year'</span>)[<span class="st">'Data.Employed.Black or African American.Counts.All'</span>].<span class="bu">sum</span>()</span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>black_civil <span class="op">=</span> df1.groupby(<span class="st">'Time.Year'</span>)[<span class="st">'Data.Civilian Labor Force.Black or African American.Participation Rate.All'</span>].<span class="bu">sum</span>()</span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="co">#black_notlabor is already done</span></span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>asia_unem_grouped <span class="op">=</span> df1.groupby(<span class="st">'Time.Year'</span>)[<span class="st">'Data.Unemployed.Asian.Counts'</span>].<span class="bu">sum</span>()</span>
-<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>asia_emp <span class="op">=</span> df1.groupby(<span class="st">'Time.Year'</span>)[<span class="st">'Data.Employed.Asian.Counts'</span>].<span class="bu">sum</span>()</span>
-<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>asia_civil <span class="op">=</span> df1.groupby(<span class="st">'Time.Year'</span>)[<span class="st">'Data.Civilian Labor Force.Asian.Counts'</span>].<span class="bu">sum</span>()</span>
-<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a><span class="co">#asia_notlabor is already done</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Data organization code for third visualization</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>white_unem_grouped <span class="op">=</span> df1.loc[df1[<span class="st">'Time.Year'</span>]<span class="op">&gt;=</span><span class="dv">2000</span>].groupby(<span class="st">'Time.Year'</span>)[<span class="st">'Data.Unemployed.White.Counts.All'</span>].<span class="bu">sum</span>()</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>white_emp <span class="op">=</span> df1.loc[df1[<span class="st">'Time.Year'</span>]<span class="op">&gt;=</span><span class="dv">2000</span>].groupby(<span class="st">'Time.Year'</span>)[<span class="st">'Data.Employed.White.Counts.All'</span>].<span class="bu">sum</span>()</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>white_civil <span class="op">=</span> df1.loc[df1[<span class="st">'Time.Year'</span>]<span class="op">&gt;=</span><span class="dv">2000</span>].groupby(<span class="st">'Time.Year'</span>)[<span class="st">'Data.Civilian Labor Force.White.Counts.All'</span>].<span class="bu">sum</span>()</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>white_notlabor <span class="op">=</span> df1.loc[df1[<span class="st">'Time.Year'</span>]<span class="op">&gt;=</span><span class="dv">2000</span>].groupby(<span class="st">'Time.Year'</span>)[<span class="st">'Data.Not In Labor Force.White'</span>].<span class="bu">sum</span>()</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>black_unem_grouped <span class="op">=</span> df1.loc[df1[<span class="st">'Time.Year'</span>]<span class="op">&gt;=</span><span class="dv">2000</span>].groupby(<span class="st">'Time.Year'</span>)[<span class="st">'Data.Unemployed.Black or African American.Counts.All'</span>].<span class="bu">sum</span>()</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>black_emp <span class="op">=</span> df1.loc[df1[<span class="st">'Time.Year'</span>]<span class="op">&gt;=</span><span class="dv">2000</span>].groupby(<span class="st">'Time.Year'</span>)[<span class="st">'Data.Employed.Black or African American.Counts.All'</span>].<span class="bu">sum</span>()</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>black_civil <span class="op">=</span> df1.loc[df1[<span class="st">'Time.Year'</span>]<span class="op">&gt;=</span><span class="dv">2000</span>].groupby(<span class="st">'Time.Year'</span>)[<span class="st">'Data.Civilian Labor Force.Black or African American.Counts.All'</span>].<span class="bu">sum</span>()</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>black_notlabor <span class="op">=</span> df1.loc[df1[<span class="st">'Time.Year'</span>]<span class="op">&gt;=</span><span class="dv">2000</span>].groupby(<span class="st">'Time.Year'</span>)[<span class="st">'Data.Not In Labor Force.Black or African American'</span>].<span class="bu">sum</span>()</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>asia_unem_grouped <span class="op">=</span> df1.loc[df1[<span class="st">'Time.Year'</span>]<span class="op">&gt;=</span><span class="dv">2000</span>].groupby(<span class="st">'Time.Year'</span>)[<span class="st">'Data.Unemployed.Asian.Counts'</span>].<span class="bu">sum</span>()</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>asia_emp <span class="op">=</span> df1.loc[df1[<span class="st">'Time.Year'</span>]<span class="op">&gt;=</span><span class="dv">2000</span>].groupby(<span class="st">'Time.Year'</span>)[<span class="st">'Data.Employed.Asian.Counts'</span>].<span class="bu">sum</span>()</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>asia_civil <span class="op">=</span> df1.loc[df1[<span class="st">'Time.Year'</span>]<span class="op">&gt;=</span><span class="dv">2000</span>].groupby(<span class="st">'Time.Year'</span>)[<span class="st">'Data.Civilian Labor Force.Asian.Counts'</span>].<span class="bu">sum</span>()</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>asia_notlabor <span class="op">=</span> df1.loc[df1[<span class="st">'Time.Year'</span>]<span class="op">&gt;=</span><span class="dv">2000</span>].groupby(<span class="st">'Time.Year'</span>)[<span class="st">'Data.Not In Labor Force.Asian'</span>].<span class="bu">sum</span>()</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>years2000 <span class="op">=</span> df1.loc[df1[<span class="st">'Time.Year'</span>]<span class="op">&gt;=</span><span class="dv">2000</span>]</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>yearsgrouped2000 <span class="op">=</span> years2000[<span class="st">'Time.Year'</span>].unique()</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>yearsgrouped <span class="op">=</span> df1[<span class="st">'Time.Year'</span>].unique()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-execution_count="142">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Potential data organization code for fourth visualization</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>total_unem <span class="op">=</span> white_unem_grouped <span class="op">+</span> black_unem_grouped <span class="op">+</span> asia_unem_grouped</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>total_emp <span class="op">=</span> white_emp <span class="op">+</span> black_emp <span class="op">+</span> asia_emp</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Data organization code for fourth visualization</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>total_unem <span class="op">=</span> [white_unem_grouped.<span class="bu">sum</span>(), black_unem_grouped.<span class="bu">sum</span>(), asia_unem_grouped.<span class="bu">sum</span>()]</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>total_emp <span class="op">=</span> [white_emp.<span class="bu">sum</span>(), black_emp.<span class="bu">sum</span>(), asia_emp.<span class="bu">sum</span>()]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-tags="[]">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co">#First Visualization: Bar Plot of Employment Ratio for Males between White and Black (with respect to years)</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Second Visualization: Bar Plot of Employment Ratio for Females between White and Black (with respect to years)</span></span>
+<p>Given all of the conclusions from the exploratory data analysis, this is the data that was used to both organize and clean the data from the CORGIS csv file. The most notable point of the analysis is the emphasis on grouping the data by year and also working around having to sum the data. Since the data is given in months over the span of years, certain data like the employment ratio needs to be averaged in order to be presentable in a data visualization. In addition, the third visualization needs to consider all of the different types of labor and the data limitation of only data after 2000 being applicable for Asians.</p>
+<p>Since the data is somewhat limited in giving a total population count, the analysis is <strong>relative</strong> as opposed to <strong>absolute</strong>. This is to better highlight the potential differences and remove the possibility of sheer numbers affecting the results. The decision to use the employment ratio for the gender analysis is also relevant to this data limitation.</p>
+<section id="first-visualization-bar-plot-of-employment-ratio-for-males-between-white-and-black-with-respect-to-years" class="level3">
+<h3 class="anchored" data-anchor-id="first-visualization-bar-plot-of-employment-ratio-for-males-between-white-and-black-with-respect-to-years">First Visualization: Bar Plot of Employment Ratio for Males between White and Black (with respect to years)</h3>
+<div class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>width <span class="op">=</span> <span class="fl">0.5</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>plt.bar(yearsgrouped<span class="op">+</span><span class="fl">0.25</span>, white_empl_ratio_male, width, label<span class="op">=</span><span class="st">'White Male Employment Ratio'</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>plt.bar(yearsgrouped<span class="op">-</span><span class="fl">0.25</span>, black_empl_ratio_male, width, label<span class="op">=</span><span class="st">'Black Male Employment Ratio'</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Year"</span>)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Employment Ratio (%)"</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Bar Plot of White and Black Male Employment Ratio"</span>)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>plt.legend(bbox_to_anchor<span class="op">=</span>(<span class="fl">1.05</span>, <span class="fl">1.0</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="12">
+<pre><code>&lt;matplotlib.legend.Legend at 0x7ff737b8f3d0&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="Website_Notebook_files/figure-html/cell-9-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<p>The main takeaway from this bar plot is that the employment ratio of the White male population is <strong>higher</strong> than the Black male population. The difference between the two ethnicities ranges from ~5% to up to ~15%, with the average difference being ~10%. The primary years where the difference is the highest are 1980-1986 and 2005-2010. Generally speaking in statistics, a difference of 5% is considered statistically significant, and the employment ratio difference is consistently above that margin. As such, it is safe to say that this difference is in-fact statistically significant and is not down to random chance. Since the data is using the <em>ratio</em> instead of <em>total # of men</em>, it is also obvious that this data is relative to the <em>total population of the ethnicity</em>.</p>
+</section>
+<section id="second-visualization-bar-plot-of-employment-ratio-for-females-between-white-and-black-with-respect-to-years" class="level3">
+<h3 class="anchored" data-anchor-id="second-visualization-bar-plot-of-employment-ratio-for-females-between-white-and-black-with-respect-to-years">Second Visualization: Bar Plot of Employment Ratio for Females between White and Black (with respect to years)</h3>
+<div class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>width <span class="op">=</span> <span class="fl">0.5</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>plt.bar(yearsgrouped<span class="op">+</span><span class="fl">0.25</span>, white_empl_ratio_female, width, label<span class="op">=</span><span class="st">'White Female Employment Ratio'</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>plt.bar(yearsgrouped<span class="op">-</span><span class="fl">0.25</span>, black_empl_ratio_female, width, label<span class="op">=</span><span class="st">'Black Female Employment Ratio'</span>)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Year"</span>)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Employment Ratio (%)"</span>)</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Bar Plot of White and Black Female Employment Ratio"</span>)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>plt.legend(bbox_to_anchor<span class="op">=</span>(<span class="fl">1.05</span>, <span class="fl">1.0</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="13">
+<pre><code>&lt;matplotlib.legend.Legend at 0x7ff7357af820&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="Website_Notebook_files/figure-html/cell-10-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<p>The main takeaway from this bar plot is that the employment ratio of the White female population is <strong>similar or slightly lower</strong> than the Black female population, although any differences between the two are not very much. The difference between the two ethnicities ranges from 1% to ~8%, with the average difference being ~5%. The primary years where the difference is the highest are 1972-1976 and 1996-2001. Generally speaking in statistics, a difference of 5% is considered statistically significant, and the employment ratio difference is consistently below that margin. As such, it is safe to say that this difference is in-fact <strong>not</strong> statistically significant and may be down to random chance. Since the data is using the <em>ratio</em> instead of <em>total # of women</em>, it is also obvious that this data is relative to the <em>total population of the ethnicity</em>.</p>
+<p>Compared to the Employment Ratio Bar Plot for Males, the difference appears to be about 20% on average. This seems to denote the general idea that males are more likely to be employment in a given ethnicity compared to females, although there is still a significant number of females that are in employment.</p>
+</section>
+<section id="third-visualizations-line-plot-of-unemployed-employed-civilian-labor-force-and-not-in-labor-for-every-race" class="level3">
+<h3 class="anchored" data-anchor-id="third-visualizations-line-plot-of-unemployed-employed-civilian-labor-force-and-not-in-labor-for-every-race">Third Visualization(s): Line Plot of Unemployed, Employed, Civilian Labor Force, and Not in Labor for every race</h3>
+<div class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots()</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>ax.plot(yearsgrouped2000, white_unem_grouped, label<span class="op">=</span><span class="st">'Unemployed'</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>ax.plot(yearsgrouped2000, white_emp, label<span class="op">=</span><span class="st">'Employed'</span>)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>ax.plot(yearsgrouped2000, white_civil, label<span class="op">=</span><span class="st">'Civil Labor'</span>)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>ax.plot(yearsgrouped2000, white_notlabor, label<span class="op">=</span><span class="st">'Not in Labor'</span>)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Year"</span>)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"# of people"</span>)</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Line Plot of White Labor Status"</span>)</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>ax.legend(bbox_to_anchor<span class="op">=</span>(<span class="fl">1.05</span>, <span class="fl">1.0</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="14">
+<pre><code>&lt;matplotlib.legend.Legend at 0x7ff735940c70&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="Website_Notebook_files/figure-html/cell-11-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<p>The best way to interpret this plot is to look at the vertical differences between the different lines, since it is using the total count of people per year as opposed to a ratio. Notably, the difference between those in Employment and Civil Labor is very minimal, and the general difference between those not in Civil Labor and those that are Unemployed is reasonably high. There is also a notable dip in employment and jump in unemployment around 2008-2009, although the lines for those in Civil Labor and those not in Civil Labor remains mostly unchanged. There is a clear upwards trend of those not in Civil Labor throughout the years, although this may be related to population growth and differences in employment types (ie. the Information Age creating new types of jobs that are not counted as Civil Labor).</p>
+<div class="cell" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots()</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>ax.plot(yearsgrouped2000, black_unem_grouped, label<span class="op">=</span><span class="st">'Unemployed'</span>)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>ax.plot(yearsgrouped2000, black_emp, label<span class="op">=</span><span class="st">'Employed'</span>)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>ax.plot(yearsgrouped2000, black_civil, label<span class="op">=</span><span class="st">'Civil Labor'</span>)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>ax.plot(yearsgrouped2000, black_notlabor, label<span class="op">=</span><span class="st">'Not in Labor'</span>)</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Year"</span>)</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"# of people"</span>)</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Line Plot of Black/African American Labor Status"</span>)</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>ax.legend(bbox_to_anchor<span class="op">=</span>(<span class="fl">1.05</span>, <span class="fl">1.0</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="15">
+<pre><code>&lt;matplotlib.legend.Legend at 0x7ff7352b7280&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="Website_Notebook_files/figure-html/cell-12-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Compared to the Line Plot of White Labor Status, the same trends that appeared before become even more obvious. Notably, the dip in employment and rise in employment around 2008 is <strong>much</strong> more pronounced in this graph compared to the Line Plot of White Labor Status. Also, the trend line for Civil Labor consistently rises as opposed to the general flatlining in the White line plot, which may be related to some other social or political event. Also, the gap between those in Civil Labor and in Employment is much larger compared to the White line plot, which denotes that there is a significant amount of Black/African American people in Civil Labor that are not under the same distinction as employment. In other words, it appears that there is a larger number of Black/African American people working Civil Labor jobs compared to White people.</p>
+<div class="cell" data-execution_count="16">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots()</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>ax.plot(yearsgrouped2000, asia_unem_grouped, label<span class="op">=</span><span class="st">'Unemployed'</span>)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>ax.plot(yearsgrouped2000, asia_emp, label<span class="op">=</span><span class="st">'Employed'</span>)</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>ax.plot(yearsgrouped2000, asia_civil, label<span class="op">=</span><span class="st">'Civil Labor'</span>)</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>ax.plot(yearsgrouped2000, asia_notlabor, label<span class="op">=</span><span class="st">'Not in Labor'</span>)</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Year"</span>)</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"# of people"</span>)</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Line Plot of Asian Labor Status"</span>)</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>ax.legend(bbox_to_anchor<span class="op">=</span>(<span class="fl">1.05</span>, <span class="fl">1.0</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="16">
+<pre><code>&lt;matplotlib.legend.Legend at 0x7ff73536aad0&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="Website_Notebook_files/figure-html/cell-13-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Many of the same trends from the White and Black/African American Labor Status plots remain the same here, although some of the differences are important to note. The biggest difference is that the trend line for Civil Labor and Employment has very consistently risen throughout the years, and is continuing to do so. In addition, these two lines are even closer together compared to both White and Black/African American populations, so it is safe to say that there are a notably small amount of Asians in Civil Labor jobs. The spike in those that are Not in Civil Labor also matches very consistently with the Employment and Civil Labor lines, which is different from the White and Black/African American trend lines.</p>
+<p>Here are some of the conclusions that can be made from these line plots - Asians are least likely to be in Civil Labor jobs - Blacks/African Americans are most likely to be in Civil Labor jobs - The 2008 Housing Crisis and subsequent Recession hit the Black/African American population the hardest, while the Asian population was affected by it the least. - Generally speaking, the number of those in employment for the White population has stayed consistent, while the number for the Black/African American population has risen slowly, and the number for the Asian population has risen significantly - Unemployment for every ethnicity is around the same relatively speaking, and same goes for those Not in Civil Labor.</p>
+</section>
+<section id="fourth-visualization-pie-chart-of-all-unemployed-people-and-employed-people" class="level3">
+<h3 class="anchored" data-anchor-id="fourth-visualization-pie-chart-of-all-unemployed-people-and-employed-people">Fourth Visualization: Pie Chart of all unemployed people and employed people</h3>
+<div class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> func(pct, allvals):</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    absolute <span class="op">=</span> <span class="bu">int</span>(np.<span class="bu">round</span>(pct<span class="op">/</span><span class="fl">100.</span><span class="op">*</span>np.<span class="bu">sum</span>(allvals)))</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="ss">f"</span><span class="sc">{</span>pct<span class="sc">:.1f}</span><span class="ss">%</span><span class="ch">\n</span><span class="ss">(</span><span class="sc">{</span>absolute<span class="sc">:d}</span><span class="ss"> people)"</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>legend_names <span class="op">=</span> [<span class="st">"White"</span>, <span class="st">"Black/African American"</span>, <span class="st">"Asian"</span>]</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots()</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>wedges, texts, autotexts <span class="op">=</span> ax.pie(total_unem, radius<span class="op">=</span><span class="dv">2</span>, autopct<span class="op">=</span><span class="kw">lambda</span> pct: func(pct, total_unem), textprops<span class="op">=</span><span class="bu">dict</span>(color<span class="op">=</span><span class="st">"w"</span>))</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>ax.legend(wedges, legend_names, title<span class="op">=</span><span class="st">"Ethnicities"</span>, loc<span class="op">=</span><span class="st">"center left"</span>, bbox_to_anchor<span class="op">=</span>(<span class="fl">1.5</span>, <span class="dv">0</span>, <span class="fl">0.5</span>, <span class="dv">1</span>))</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>plt.setp(autotexts, size<span class="op">=</span><span class="dv">10</span>, weight<span class="op">=</span><span class="st">"bold"</span>)</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Pie Chart of Unemployed People"</span>, y<span class="op">=</span><span class="fl">1.4</span>)</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="Website_Notebook_files/figure-html/cell-14-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Admittedly, this plot does not say very much on its own, since it is heavily affected by the sheer number of White people in the data compared to the Black/African American and Asian populations. This is best compared to the pie chart of those that are employed, since we can have a better grasp of the potential differences.</p>
+<div class="cell" data-execution_count="18">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> func(pct, allvals):</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    absolute <span class="op">=</span> <span class="bu">int</span>(np.<span class="bu">round</span>(pct<span class="op">/</span><span class="fl">100.</span><span class="op">*</span>np.<span class="bu">sum</span>(allvals)))</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="ss">f"</span><span class="sc">{</span>pct<span class="sc">:.1f}</span><span class="ss">%</span><span class="ch">\n</span><span class="ss">(</span><span class="sc">{</span>absolute<span class="sc">:d}</span><span class="ss"> people)"</span></span>
 <span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="co">#Third Visualization: Line Plot of Unemployed, Employed, Civilian Labor Force, and Not in Labor for every race</span></span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="co">#Fourth Visualization: Histogram of all unemployed people and Histogram of all employed people</span></span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="co">#More visualizations after more data collection and when the narrative is defined more</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>legend_names <span class="op">=</span> [<span class="st">"White"</span>, <span class="st">"Black/African American"</span>, <span class="st">"Asian"</span>]</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots()</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>wedges, texts, autotexts <span class="op">=</span> ax.pie(total_emp, radius<span class="op">=</span><span class="dv">2</span>, autopct<span class="op">=</span><span class="kw">lambda</span> pct: func(pct, total_unem), textprops<span class="op">=</span><span class="bu">dict</span>(color<span class="op">=</span><span class="st">"w"</span>))</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>ax.legend(wedges, legend_names, title<span class="op">=</span><span class="st">"Ethnicities"</span>, loc<span class="op">=</span><span class="st">"center left"</span>, bbox_to_anchor<span class="op">=</span>(<span class="fl">1.5</span>, <span class="dv">0</span>, <span class="fl">0.5</span>, <span class="dv">1</span>))</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>plt.setp(autotexts, size<span class="op">=</span><span class="dv">10</span>, weight<span class="op">=</span><span class="st">"bold"</span>)</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Pie Chart of Employed People"</span>, y<span class="op">=</span><span class="fl">1.4</span>)</span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="Website_Notebook_files/figure-html/cell-15-output-1.png" class="img-fluid"></p>
 </div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Boxes below for more analytical data visualizations</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<p>With this chart and comparing it to the previous pie chart, it is evident that there is a clear difference between the White and Black/African American population when it comes to labor status. Notably, the percentage difference is around 10% when comparing the percentage difference of how many Black/African American people are employed versus those that are unemployed. The percentage for the Asian population is mostly unchanged.</p>
+<p>Although this data visualization is not very comprehensive and requires much more specific data analysis to be fully conclusive, the one major takeaway is that there is a significant amount of Black/African-Americans that are unemployed compared to those that are employed, and that the White population has made up much of that difference. It is hard to concretely conclude why this is the case, but the difference between the two is non-negligible.</p>
+<p>Further analysis through methods such as separating by year for each pie chart and looking the Civil Labor populations can reveal more into why this difference is so apparent, as well as potential changes over the years. Additionally, data featuring other ethnicities may help to clarify the true ratio between the ethnicities in regards to labor status.</p>
+</section>
+</section>
+<section id="conclusion" class="level1">
+<h1>Conclusion</h1>
+<p>Overall, the analysis has been successful to a degree in answering the research questions that were posed in the beginning of the project. Although specific factors behind these answers is difficult to concretely say, it is evident that there are at least differences. I do believe some of the data could be represented better or cleaned in a different way, but I do feel that the current results provide a general picture of the state of labor status in the US. If the data was a little bit more expansive, or did not miss data from before 2000 for Asians, I do believe some of the visualizations would be more concrete (eg. the line plots).</p>
+<p>An important fact about this data is that it only goes up to 2015, which means that it completely misses the 2020 COVID-19 pandemic. Although I do not have numbers for that data, it is absolutely obvious that the pandemic must have had a varying effect depending on gender and ethnicity, especially since the differences are already clear here. The COVID-19 pandemic affected everyone, but I would have liked to analyze the data both during and after the COVID-19 pandemic (ie. up to the present year of 2023).</p>
+<p>I believe that this type of analysis can be <strong>very</strong> heavily expanded upon, although the extent of what’s possible may be limited to the data that exists. If I had to do this analysis again, I would attempt to provide even more specific plots and try to gather data with more than just White, Black/African American, and Asian.</p>
+<p>The sections below will be conclusions regarding the specific research questions.</p>
+<ul>
+<li>Are there major differences in employment between ethnicities in the US?</li>
+</ul>
+<p>Yes, absolutely. However, the major differences are primarily between a higher number/ratio of those in employment for the White population, and a lower number/ratio of those in employment for the Black/African American population. Notably, the Asian population is steadily rising and the numbers trend toward it continuing to grow over time. If the data reached all the way up to the present day (2023), it is safe to conclude that the Asian population would be getting closer to the White population. Although it is hard to say exactly why there are differences, the differences became smaller as the years continued and the trend appears to show that it would have continued to do so to the present day.</p>
+<ul>
+<li>Are men or women more likely to be employed in the US?</li>
+</ul>
+<p>Men are more likely to be employed in the US. Although the numbers are generally decreasing for men and increasing for women, the general difference appears to be around 20% between male and female. The male employment ratio went from around 80% to 70% from 1972 to 2015, and the female employment ratio went from around 50% to 60% from 1972 to 2015. As such, it is generally safe to say that the difference is significant enough to raise questions for further analysis. However, the data is limited in the scope of gender and labor status, so further data scraping would be required to objectively extend the analysis beyong this point. General reasons for this difference in employment may simply come down to changing societal standards for both males and females. However, this can be clarified if types of labor are analyzed more heavily.</p>
+<p>Side note: There did not appear to be a major difference between White and Black/African American <strong>female</strong> employment, but there was a major difference between White and Black/African American <strong>male</strong> employment.</p>
+<ul>
+<li>Is there a specific combination of ethnicity and gender that is more likely to be employed or less likely to be employed?</li>
+</ul>
+<p>From the data analysis, it appears that being <strong>White</strong> and <strong>male</strong> is the combination that is most likely to be employed, and conversely, being <strong>Black/African American</strong> and <strong>female</strong> is the combination that is least likely to be employed. This conclusion is gathered from compounding the analysis between the male and female, as well as the ethnicity analysis, although the first and second data visualizations are enough to answer this point without much further insight.</p>
+<p>Notably, this is a hard question to concretely answer since it relies so heavily on other factors that <strong>cannot</strong> be objectively analyzed. However, the general trends of the given data appear to reflect the same conclusions and it is possible that as a collective narrative, these conclusions are correct regardless of the reasons why.</p>
+<ul>
+<li>Which ethnicity has the highest number of people that are employed and unemployed?</li>
+</ul>
+<p>Although this question was not as thoroughly answered, the basic and rudimentary conclusion is that the White population has the highest number of people that are employed and unemployed <strong>based off of objective numbers</strong>. However, <strong>relatively speaking</strong>, the ethnicity with the highest ratio of employment is Asians followed very shortly by White people. Conversely, the ethnicity with the lowest ratio of employment is Black/African Americans. The best example of this is the fourth data visualizations (ie. the pie charts), although these same conclusions can be somewhat extrapolated from the third data visualizations (ie. the line plots).</p>
+<p>Further analysis needs to be done in order to concretely anwer this question, and including other ethnicities may be required to fully answer it.</p>
 
 
 </section>

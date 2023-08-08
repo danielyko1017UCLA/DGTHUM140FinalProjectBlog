@@ -14,25 +14,18 @@
     "text": "This is a post with executable code."
   },
   {
-    "objectID": "posts/Website_Notebook.html",
-    "href": "posts/Website_Notebook.html",
-    "title": "Analysis of Labor between Ethnicity and Gender",
-    "section": "",
-    "text": "This analysis aims to look for patterns and/or correlations between labor status in the US (eg. employed, unemployed, civilian labor force) and other factors such as ethnicity (eg. White, Asian, African-American) and gender (eg. male or female). These will be compared against each other to provide different insights into what may be related with each other. In order to expand on this analysis, other datasets with other factors such as cost of living and average income may be included as this notebook is being developed. Also, datasets with more up-to-date labor data may be included as well. The primary libraries that will be used are pandas and matplotlib, although other libraries may be used depending on what the other datasets may require for cleaning or web scraping."
-  },
-  {
     "objectID": "posts/Website_Notebook.html#description",
     "href": "posts/Website_Notebook.html#description",
     "title": "Analysis of Labor between Ethnicity and Gender",
-    "section": "",
-    "text": "This analysis aims to look for patterns and/or correlations between labor status in the US (eg. employed, unemployed, civilian labor force) and other factors such as ethnicity (eg. White, Asian, African-American) and gender (eg. male or female). These will be compared against each other to provide different insights into what may be related with each other. In order to expand on this analysis, other datasets with other factors such as cost of living and average income may be included as this notebook is being developed. Also, datasets with more up-to-date labor data may be included as well. The primary libraries that will be used are pandas and matplotlib, although other libraries may be used depending on what the other datasets may require for cleaning or web scraping."
+    "section": "Description",
+    "text": "Description\nThis analysis aims to look for patterns and/or correlations between labor status in the US (eg. employed, unemployed) and other factors such as ethnicity (eg. White, Black/African-American) and gender (male or female). These will be compared against each other to provide different insights into what may be related with each other. More specifically, the differences between different factors and categories will be explored. The primary libraries that will be used are pandas and matplotlib, although other libraries such as requests and BeautifulSoup were used to help with scraping the data."
   },
   {
-    "objectID": "posts/Website_Notebook.html#data-sources",
-    "href": "posts/Website_Notebook.html#data-sources",
+    "objectID": "posts/Website_Notebook.html#data-source",
+    "href": "posts/Website_Notebook.html#data-source",
     "title": "Analysis of Labor between Ethnicity and Gender",
-    "section": "Data Source(s)",
-    "text": "Data Source(s)\nLabor Data from CORGIS (Up to 2015): https://corgis-edu.github.io/corgis/csv/labor/\n(TO BE EXPANDED LATER)"
+    "section": "Data Source",
+    "text": "Data Source\nLabor Data from CORGIS (Up to 2015): https://corgis-edu.github.io/corgis/csv/labor/"
   },
   {
     "objectID": "posts/Website_Notebook.html#motivation",
@@ -46,7 +39,21 @@
     "href": "posts/Website_Notebook.html#questions-to-answer",
     "title": "Analysis of Labor between Ethnicity and Gender",
     "section": "Questions to Answer",
-    "text": "Questions to Answer\n\nAre there major differences in employment between ethnicities in the US?\nAre men or women more likely to be employed in the US?\nIs there a specific combination of ethnicity and gender that is more likely to be employed or less likely to be employed?\nWhat is the most common type of employment for a given ethnicity or gender? (TO BE EXPANDED LATER)"
+    "text": "Questions to Answer\n\nAre there major differences in employment between ethnicities in the US?\nAre men or women more likely to be employed in the US?\nIs there a specific combination of ethnicity and gender that is more likely to be employed or less likely to be employed?\nWhich ethnicity has the highest number of people that are employed and unemployed?"
+  },
+  {
+    "objectID": "posts/Website_Notebook.html#imports-and-data-collection",
+    "href": "posts/Website_Notebook.html#imports-and-data-collection",
+    "title": "Analysis of Labor between Ethnicity and Gender",
+    "section": "Imports and Data Collection",
+    "text": "Imports and Data Collection\n\nimport requests\nfrom bs4 import BeautifulSoup\nimport pandas as pd\nimport matplotlib.pyplot as plt\nimport numpy as np\n\n\ndef pdcorgis(a):\n  inputText = a.lower()\n  url = 'https://corgis-edu.github.io/corgis/csv/' + inputText + '/'\n  \n  response = requests.get(url)\n  html_string = response.text\n  document = BeautifulSoup(html_string, \"html.parser\")\n  links = document.find_all('a')\n  \n  for i in links:\n    if i.has_attr('download'):\n      hrefVar = i['href']\n  \n  newURL = url + hrefVar\n  dataframe = pd.read_csv(newURL)\n  \n  return dataframe\n\n\ndf1 = pdcorgis('labor')"
+  },
+  {
+    "objectID": "posts/Website_Notebook.html#understanding-the-data",
+    "href": "posts/Website_Notebook.html#understanding-the-data",
+    "title": "Analysis of Labor between Ethnicity and Gender",
+    "section": "Understanding the Data",
+    "text": "Understanding the Data\n\nData stretches from 1972 to 2015 completely from month to month\nThe data is mostly complete for White and African American, but is noticeably missing everything before 2000 for Asians\nNoticeable gap of “Not in Labor” for White between 1972 and 1976\nData is sectioned by status of employment, then ethnicity, then type of data (eg. count, rate, etc.)\nMost data is of a float type, but some are strings or integers when relevant\nYears and Months need to be enumerated in order to properly visualize trends\nComparison between male and female should be relatively straightforward since they are already separated\nRates and ratios are percentages, but are of the float type\nTime.Month is mostly irrelevant, since Time.Month Name exists and is essentially the same thing"
   },
   {
     "objectID": "posts/welcome/index.html",
